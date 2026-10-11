@@ -39,7 +39,6 @@ export const Header: React.FC<HeaderProps> = ({
   const navItems: { id: ActiveView; label: string; icon: React.ReactNode }[] = [
     { id: 'home', label: 'Home', icon: <Compass className="w-4 h-4" /> },
     { id: 'explore', label: 'Explore & Map', icon: <Layers className="w-4 h-4" /> },
-    { id: 'categories', label: 'Categories', icon: <Layers className="w-4 h-4" /> },
     { id: 'admin', label: 'Admin Desk', icon: <ShieldCheck className="w-4 h-4" /> },
     { id: 'about', label: 'About', icon: <Info className="w-4 h-4" /> },
   ];

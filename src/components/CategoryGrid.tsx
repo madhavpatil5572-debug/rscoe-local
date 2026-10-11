@@ -12,7 +12,12 @@ import {
   Wrench,
   Coffee,
   Compass,
-  ArrowRight
+  ArrowRight,
+  Shirt,
+  Dumbbell,
+  Bus,
+  CreditCard,
+  PackageCheck
 } from 'lucide-react';
 import type { CategoryId, CategoryMeta } from '../types';
 import { CATEGORIES } from '../data/placesData';
@@ -43,6 +48,11 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
       case 'Printer': return <Printer className={className} />;
       case 'Wrench': return <Wrench className={className} />;
       case 'Coffee': return <Coffee className={className} />;
+      case 'Shirt': return <Shirt className={className} />;
+      case 'Dumbbell': return <Dumbbell className={className} />;
+      case 'Bus': return <Bus className={className} />;
+      case 'CreditCard': return <CreditCard className={className} />;
+      case 'PackageCheck': return <PackageCheck className={className} />;
       default: return <Compass className={className} />;
     }
   };
@@ -50,8 +60,13 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
   const getCategoryTheme = (id: CategoryId) => {
     switch (id) {
       case 'mess': return { iconBg: 'bg-orange-500 text-white' };
-      case 'food': return { iconBg: 'bg-amber-500 text-white' };
-      case 'street-food': return { iconBg: 'bg-red-500 text-white' };
+      case 'cafes': return { iconBg: 'bg-amber-600 text-white' };
+      case 'repairs': return { iconBg: 'bg-violet-600 text-white' };
+      case 'clothing': return { iconBg: 'bg-pink-600 text-white' };
+      case 'fitness': return { iconBg: 'bg-emerald-600 text-white' };
+      case 'transport': return { iconBg: 'bg-amber-500 text-white' };
+      case 'banking': return { iconBg: 'bg-teal-600 text-white' };
+      case 'college-essentials': return { iconBg: 'bg-cyan-600 text-white' };
       case 'salon': return { iconBg: 'bg-indigo-600 text-white' };
       case 'pg': return { iconBg: 'bg-blue-600 text-white' };
       case 'printing': return { iconBg: 'bg-cyan-600 text-white' };
@@ -59,7 +74,6 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
       case 'medical': return { iconBg: 'bg-rose-600 text-white' };
       case 'grocery': return { iconBg: 'bg-green-600 text-white' };
       case 'laundry': return { iconBg: 'bg-sky-600 text-white' };
-      case 'shops': return { iconBg: 'bg-purple-600 text-white' };
       default: return { iconBg: 'bg-slate-700 text-white' };
     }
   };

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
+import { Layers, Globe, Compass } from 'lucide-react';
 import type { Place } from '../types';
 import { RSCOE_LOCATION } from '../data/placesData';
 import { useTheme } from '../context/ThemeContext';
@@ -28,6 +29,8 @@ export const MapView: React.FC<MapViewProps> = ({
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const markerMapRef = useRef<Map<string, L.Marker>>(new Map());
   const { theme } = useTheme();
+  const [mapType, setMapType] = useState<'osm' | 'google-roadmap' | 'google-satellite'>('osm');
+  const googleMapsKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || '';
 
   // Helper to get category SVG icon string
   const getCategoryIconSvg = (category: string) => {
@@ -35,6 +38,20 @@ export const MapView: React.FC<MapViewProps> = ({
       case 'mess':
       case 'food':
         return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8Z"/><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/><path d="m2.1 21.8 6.4-6.3"/><path d="m19 5-7 7"/></svg>`;
+      case 'cafes':
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h12Z"/><path d="M6 2v2"/><line x1="17" x2="19" y1="11" y2="11"/><path d="M19 11a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-2"/></svg>`;
+      case 'repairs':
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`;
+      case 'clothing':
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>`;
+      case 'fitness':
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg>`;
+      case 'transport':
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.6 19 6 17.7 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><circle cx="15" cy="18" r="2"/></svg>`;
+      case 'banking':
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`;
+      case 'college-essentials':
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" x2="12" y1="22" y2="12"/></svg>`;
       case 'salon':
         return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/><path d="M8.12 15.88 16 8"/><path d="M14.8 9.2 20 4"/></svg>`;
       case 'pg':
@@ -59,15 +76,20 @@ export const MapView: React.FC<MapViewProps> = ({
   const getMarkerColor = (category: string) => {
     switch (category) {
       case 'mess': return '#f97316';
-      case 'food': return '#d97706';
-      case 'street-food': return '#ef4444';
+      case 'cafes': return '#d97706';
+      case 'repairs': return '#7c3aed';
+      case 'clothing': return '#db2777';
+      case 'fitness': return '#059669';
+      case 'transport': return '#f59e0b';
+      case 'banking': return '#0d9488';
+      case 'college-essentials': return '#0891b2';
       case 'salon': return '#6366f1';
       case 'pg': return '#2563eb';
-      case 'printing': return '#0891b2';
-      case 'stationery': return '#059669';
+      case 'printing': return '#0284c7';
+      case 'stationery': return '#10b981';
       case 'medical': return '#e11d48';
       case 'grocery': return '#16a34a';
-      case 'laundry': return '#0284c7';
+      case 'laundry': return '#0ea5e9';
       default: return '#475569';
     }
   };
@@ -145,7 +167,7 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, []);
 
-  // Update Tile Layer when theme changes (CartoDB Dark Matter vs Voyager)
+  // Update Tile Layer when theme or map layer changes
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
@@ -154,18 +176,30 @@ export const MapView: React.FC<MapViewProps> = ({
       map.removeLayer(tileLayerRef.current);
     }
 
-    const tileUrl = theme === 'dark'
-      ? 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    let tileUrl = '';
+    let attribution = '';
+
+    if (mapType === 'google-satellite') {
+      tileUrl = `https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}${googleMapsKey ? `&key=${googleMapsKey}` : ''}`;
+      attribution = '&copy; Google Maps';
+    } else if (mapType === 'google-roadmap') {
+      tileUrl = `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}${googleMapsKey ? `&key=${googleMapsKey}` : ''}`;
+      attribution = '&copy; Google Maps';
+    } else {
+      tileUrl = theme === 'dark'
+        ? 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+    }
 
     const newTileLayer = L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 19,
-      subdomains: 'abcd',
+      attribution,
+      maxZoom: 20,
+      subdomains: mapType === 'osm' ? 'abcd' : '',
     }).addTo(map);
 
     tileLayerRef.current = newTileLayer;
-  }, [theme]);
+  }, [theme, mapType, googleMapsKey]);
 
   // Update Markers when places or theme change
   useEffect(() => {
@@ -311,7 +345,7 @@ export const MapView: React.FC<MapViewProps> = ({
       <div ref={mapContainerRef} className="w-full h-full z-10" />
 
       {/* Floating Map Controls & Overlays */}
-      <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
+      <div className="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-2">
         <button
           onClick={handleResetToCollege}
           className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md hover:bg-white dark:hover:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 px-3 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-2 transition hover:shadow-lg cursor-pointer"
@@ -321,16 +355,64 @@ export const MapView: React.FC<MapViewProps> = ({
         </button>
       </div>
 
+      {/* Layer Switcher (Top Right) */}
+      <div className="absolute top-3 right-12 z-20 flex items-center bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-700 rounded-xl p-1 shadow-md gap-1">
+        <button
+          onClick={() => setMapType('osm')}
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+            mapType === 'osm'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+          title="OpenStreetMap / Carto Vector Tiles"
+        >
+          Standard
+        </button>
+        <button
+          onClick={() => setMapType('google-roadmap')}
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+            mapType === 'google-roadmap'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+          title="Google Maps Street View"
+        >
+          Google Maps
+        </button>
+        <button
+          onClick={() => setMapType('google-satellite')}
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+            mapType === 'google-satellite'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+          title="Google Satellite Hybrid View"
+        >
+          Satellite
+        </button>
+      </div>
+
       {/* Bottom Map Status Legend */}
       <div className="absolute bottom-3 left-3 right-3 sm:right-auto z-20 pointer-events-none">
-        <div className="bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-md text-white text-[11px] px-3 py-2 rounded-xl border border-slate-700/80 dark:border-slate-800 shadow-lg flex items-center justify-between gap-3 pointer-events-auto">
+        <div className="bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-md text-white text-[11px] px-3.5 py-2 rounded-xl border border-slate-700/80 dark:border-slate-800 shadow-lg flex items-center justify-between gap-3 pointer-events-auto">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span className="font-semibold">{places.length} Student Verified Spots Loaded</span>
+            <span className="font-semibold">{places.length} Student Spots Loaded</span>
           </div>
-          <span className="text-slate-400 hidden sm:inline">
-            {theme === 'dark' ? 'Dark Mode Tiles' : 'Voyager Tiles'}
-          </span>
+          <div className="flex items-center gap-2">
+            {googleMapsKey ? (
+              <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                Google Maps Key Active
+              </span>
+            ) : null}
+            <span className="text-slate-400 hidden sm:inline">
+              {mapType === 'google-satellite' 
+                ? 'Google Satellite' 
+                : mapType === 'google-roadmap' 
+                ? 'Google Roadmap' 
+                : theme === 'dark' ? 'Dark Mode' : 'Voyager'}
+            </span>
+          </div>
         </div>
       </div>
     </div>

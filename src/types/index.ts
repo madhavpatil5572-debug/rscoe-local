@@ -1,16 +1,22 @@
 export type CategoryId =
   | 'all'
-  | 'food'
   | 'mess'
+  | 'food'
+  | 'cafes'
   | 'salon'
   | 'pg'
+  | 'repairs'
+  | 'clothing'
+  | 'fitness'
+  | 'college-essentials'
+  | 'transport'
+  | 'banking'
   | 'medical'
   | 'stationery'
   | 'grocery'
   | 'street-food'
   | 'laundry'
-  | 'printing'
-  | 'shops';
+  | 'printing';
 
 export type PriceLevel = 'budget' | 'moderate' | 'premium';
 
@@ -80,4 +86,4 @@ export interface FilterState {
   sortBy: 'distance' | 'rating' | 'price' | 'featured';
 }
 
-export type ActiveView = 'home' | 'explore' | 'categories' | 'admin' | 'about';
+export type ActiveView = 'home' | 'explore' | 'admin' | 'about';

@@ -53,14 +53,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveView, onOpenAddPlace })
                   Explore Interactive Map
                 </button>
               </li>
-              <li>
-                <button 
-                  onClick={() => { setActiveView('categories'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  className="hover:text-blue-400 transition"
-                >
-                  All Campus Categories
-                </button>
-              </li>
+
               <li>
                 <button 
                   onClick={onOpenAddPlace}

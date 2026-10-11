@@ -326,12 +326,13 @@ export function App() {
 
                 <button
                   onClick={() => {
-                    setActiveView('categories');
+                    setFilters(prev => ({ ...prev, category: 'all' }));
+                    setActiveView('explore');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition cursor-pointer"
                 >
-                  <span>All Categories</span>
+                  <span>Explore All Spots</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -589,46 +590,6 @@ export function App() {
           </div>
         )}
 
-        {/* VIEW 3: CATEGORIES VIEW */}
-        {activeView === 'categories' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                Comprehensive Campus Directory
-              </span>
-              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                All Local Categories
-              </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                Browse student verified services surrounding JSPM RSCOE campus by exact service type.
-              </p>
-            </div>
-
-            <CategoryGrid
-              selectedCategory={filters.category}
-              onSelectCategory={handleHomeCategorySelect}
-              placesCountByCategory={placesCountByCategory}
-            />
-
-            <div className="bg-slate-900 dark:bg-slate-950 text-white p-6 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800">
-              <div>
-                <h3 className="text-base font-bold">Know a missing student spot?</h3>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Help fellow engineering students find great budget food, tea stalls, and printing shops.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  setPlaceToEdit(null);
-                  setIsAddModalOpen(true);
-                }}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shrink-0 cursor-pointer shadow-md"
-              >
-                + Suggest a Place
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* VIEW 4: ADMIN DASHBOARD */}
         {activeView === 'admin' && (
