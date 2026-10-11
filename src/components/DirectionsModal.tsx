@@ -17,62 +17,77 @@ interface DirectionsModalProps {
 export const DirectionsModal: React.FC<DirectionsModalProps> = ({ place, onClose }) => {
   if (!place) return null;
 
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${RSCOE_LOCATION.latitude},${RSCOE_LOCATION.longitude}&destination=${place.latitude},${place.longitude}&travelmode=walking`;
+    const googleMapsKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyCZsXFZAdC6YKYeLk1S6riL_mn1vo02fRg';
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${RSCOE_LOCATION.latitude},${RSCOE_LOCATION.longitude}&destination=${place.latitude},${place.longitude}&travelmode=walking`;
 
-  const estimatedWalkingMinutes = Math.max(1, Math.round(place.distanceKm * 13));
+    const estimatedWalkingMinutes = Math.max(1, Math.round(place.distanceKm * 13));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn">
-      <div 
-        className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-850/50">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
-              <Navigation className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Walking Directions
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                From JSPM RSCOE to {place.name}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full transition cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Modal Body */}
-        <div className="p-6 space-y-5">
-          {/* Walking Time & Distance Pill */}
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-900/60 rounded-2xl flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                <Footprints className="w-5 h-5" />
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+        <div 
+          className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-850/50">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                <Navigation className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-base font-extrabold text-blue-950 dark:text-blue-100">
-                  ~{estimatedWalkingMinutes} mins walk
-                </div>
-                <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-                  {place.distanceFromCollege}
-                </div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                  Walking Directions
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  From JSPM RSCOE to {place.name}
+                </p>
               </div>
             </div>
 
-            <span className="text-[11px] font-bold bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full shadow-2xs border border-blue-200 dark:border-blue-800">
-              Student Route
-            </span>
+            <button
+              onClick={onClose}
+              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full transition cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
+
+          {/* Modal Body */}
+          <div className="p-6 space-y-5">
+            {/* Embedded Google Maps Live Route */}
+            <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-inner bg-slate-100 dark:bg-slate-800">
+              <iframe
+                title={`Google Maps route to ${place.name}`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/directions?key=${googleMapsKey}&origin=${RSCOE_LOCATION.latitude},${RSCOE_LOCATION.longitude}&destination=${place.latitude},${place.longitude}&mode=walking`}
+              />
+            </div>
+
+            {/* Walking Time & Distance Pill */}
+            <div className="p-4 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-900/60 rounded-2xl flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                  <Footprints className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-base font-extrabold text-blue-950 dark:text-blue-100">
+                    ~{estimatedWalkingMinutes} mins walk
+                  </div>
+                  <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                    {place.distanceFromCollege}
+                  </div>
+                </div>
+              </div>
+
+              <span className="text-[11px] font-bold bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full shadow-2xs border border-blue-200 dark:border-blue-800">
+                Student Route
+              </span>
+            </div>
 
           {/* Stepper Route Preview */}
           <div className="space-y-4 pl-2">

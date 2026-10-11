@@ -29,8 +29,8 @@ export const MapView: React.FC<MapViewProps> = ({
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const markerMapRef = useRef<Map<string, L.Marker>>(new Map());
   const { theme } = useTheme();
-  const [mapType, setMapType] = useState<'osm' | 'google-roadmap' | 'google-satellite'>('osm');
-  const googleMapsKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || '';
+  const [mapType, setMapType] = useState<'osm' | 'google-roadmap' | 'google-satellite'>('google-roadmap');
+  const googleMapsKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyCZsXFZAdC6YKYeLk1S6riL_mn1vo02fRg';
 
   // Helper to get category SVG icon string
   const getCategoryIconSvg = (category: string) => {

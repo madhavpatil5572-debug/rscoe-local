@@ -36,6 +36,7 @@ export const PlaceDetailsModal: React.FC<PlaceDetailsModalProps> = ({
   const [newReviewRating, setNewReviewRating] = useState(5);
   const [reviewsList, setReviewsList] = useState(place?.reviews || []);
   const [showReviewInput, setShowReviewInput] = useState(false);
+  const googleMapsKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyCZsXFZAdC6YKYeLk1S6riL_mn1vo02fRg';
 
   if (!place) return null;
 
@@ -267,6 +268,19 @@ export const PlaceDetailsModal: React.FC<PlaceDetailsModalProps> = ({
               <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                 <MapPin className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
                 <span><strong>Address:</strong> {place.address}</span>
+              </div>
+              {/* Google Maps Embed Preview */}
+              <div className="mt-3 w-full h-36 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-inner bg-slate-100 dark:bg-slate-800">
+                <iframe
+                  title={`Google Map location of ${place.name}`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://www.google.com/maps/embed/v1/place?key=${googleMapsKey}&q=${place.latitude},${place.longitude}&zoom=17`}
+                />
               </div>
             </div>
 
