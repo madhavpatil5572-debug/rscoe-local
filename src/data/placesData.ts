@@ -540,7 +540,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Shared Auto to Hinjewadi Phase 1 (Morning & Evening)', price: 30, unit: 'per seat', popular: true },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1559070169-a3077159ee16?w=800&auto=format&fit=crop&q=80',
+      '/car_taxi_mockup.jpg',
     ],
     verified: true,
     lastVerified: 'October 2026',
