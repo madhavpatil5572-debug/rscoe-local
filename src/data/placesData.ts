@@ -136,7 +136,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Kadak Adrak Cutting Chai', price: 12, unit: 'per cup' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -540,7 +540,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Shared Auto to Hinjewadi Phase 1 (Morning & Evening)', price: 30, unit: 'per seat', popular: true },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1598971861713-54ad16a7e72e?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1604999333679-b86d54738315?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -628,7 +628,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Mini Statement & PIN Change', price: 0, unit: 'free' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1580508174046-170816f65662?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -669,7 +669,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Passbook Printing Machine (BOM)', price: 0, unit: 'free' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -983,7 +983,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Blood Pressure / Pulse Check', price: 0, unit: 'free check', popular: true },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
