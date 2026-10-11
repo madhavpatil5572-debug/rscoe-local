@@ -72,6 +72,8 @@ export function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [placeToEdit, setPlaceToEdit] = useState<Place | null>(null);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [homeCategoryFilter, setHomeCategoryFilter] = useState<CategoryId>('all');
+  const [mapShowAll, setMapShowAll] = useState(true);
 
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: '',
@@ -177,6 +179,11 @@ export function App() {
   const popularNearbyPlaces = useMemo(() => {
     return places.filter(p => p.featured || p.rating >= 4.6).slice(0, 6);
   }, [places]);
+
+  const homeDisplayPlaces = useMemo(() => {
+    if (homeCategoryFilter === 'all') return places;
+    return places.filter(p => p.category === homeCategoryFilter);
+  }, [places, homeCategoryFilter]);
 
   const handleResetFilters = () => {
     setFilters({
@@ -385,41 +392,74 @@ export function App() {
               </div>
             </section>
 
-            {/* POPULAR NEARBY SECTION */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-              <div className="flex items-center justify-between mb-6">
+            {/* ALL CAMPUS SPOTS DIRECTORY ON HOME PAGE */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                      Student Verified Picks
+                      All Campus Services ({places.length} Total Spots)
                     </span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5">
-                    Popular Nearby RSCOE
+                    Explore Every Spot Around RSCOE
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                    Highest rated mess thalis, print centers, salons and student hangouts
+                    Showing {homeDisplayPlaces.length} verified spots • Messes, cafes, laptop repairs, tailors, ATMs, gyms & transport
                   </p>
                 </div>
 
-                <button
-                  onClick={() => {
-                    setActiveView('explore');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition cursor-pointer"
-                >
-                  <span>View All {places.length}</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setFilters(prev => ({ ...prev, category: homeCategoryFilter }));
+                      setActiveView('explore');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-blue-500/20 transition cursor-pointer"
+                  >
+                    <Compass className="w-4 h-4" />
+                    <span>Open in Map View ({homeDisplayPlaces.length})</span>
+                  </button>
+                </div>
               </div>
 
+              {/* Quick Filter Pills on Home Page */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-3 pt-1 no-scrollbar mb-5">
+                {CATEGORIES.map((cat) => {
+                  const isSelected = homeCategoryFilter === cat.id;
+                  const count = cat.id === 'all' ? places.length : (placesCountByCategory[cat.id] ?? 0);
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setHomeCategoryFilter(cat.id)}
+                      className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer border ${
+                        isSelected
+                          ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 border-slate-900 dark:border-white shadow-sm'
+                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-750'
+                      }`}
+                    >
+                      <span>{cat.label}</span>
+                      <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        isSelected 
+                          ? 'bg-slate-800 dark:bg-slate-200 text-slate-200 dark:text-slate-900' 
+                          : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                      }`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* All Places Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {popularNearbyPlaces.map((place) => (
+                {homeDisplayPlaces.map((place) => (
                   <PlaceCard
                     key={place.id}
                     place={place}
+                    isSelected={selectedPlace?.id === place.id}
                     onSelect={(p) => setSelectedPlace(p)}
                     onGetDirections={(p) => setDirectionsPlace(p)}
                   />

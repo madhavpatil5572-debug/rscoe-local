@@ -136,8 +136,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Kadak Adrak Cutting Chai', price: 12, unit: 'per cup' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -274,8 +273,8 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Student Diagnostic Check', price: 0, unit: 'free for RSCOE', popular: true },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -318,7 +317,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Laptop Charger Cable Joint & Shrink Repair', price: 120, unit: 'service' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1588508065123-287b28e013da?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -408,7 +407,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Jeans / Jacket Zipper Replacement', price: 50, unit: 'piece' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -453,8 +452,8 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Daily Drop-in Session', price: 50, unit: 'per day' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -541,7 +540,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Shared Auto to Hinjewadi Phase 1 (Morning & Evening)', price: 30, unit: 'per seat', popular: true },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1598971861713-54ad16a7e72e?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -629,7 +628,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Mini Statement & PIN Change', price: 0, unit: 'free' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -670,7 +669,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Passbook Printing Machine (BOM)', price: 0, unit: 'free' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -809,7 +808,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Head Massage with Cooling Oil (15 mins)', price: 80, unit: 'session' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
@@ -853,7 +852,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Eyebrow Threading & Upper Lip', price: 50, unit: 'session' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -1026,7 +1025,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'First Aid Emergency Kit Box', price: 180, unit: 'box' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -1112,7 +1111,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Placement Formal Blazer Dry Clean', price: 150, unit: 'per suit', popular: true },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
