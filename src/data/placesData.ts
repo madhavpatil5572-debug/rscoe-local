@@ -628,7 +628,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Mini Statement & PIN Change', price: 0, unit: 'free' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&auto=format&fit=crop&q=80',
+      '/atm_mockup.jpg',
     ],
     verified: true,
     lastVerified: 'October 2026',
