@@ -540,7 +540,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Shared Auto to Hinjewadi Phase 1 (Morning & Evening)', price: 30, unit: 'per seat', popular: true },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1604999333679-b86d54738315?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
@@ -628,7 +628,7 @@ export const INITIAL_PLACES: Place[] = [
       { name: 'Mini Statement & PIN Change', price: 0, unit: 'free' },
     ],
     photos: [
-      'https://images.unsplash.com/photo-1580508174046-170816f65662?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&auto=format&fit=crop&q=80',
     ],
     verified: true,
     lastVerified: 'October 2026',
