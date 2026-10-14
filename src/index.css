@@ -81,3 +81,79 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* --- Minion Live Cartoon Animations --- */
+@keyframes minionWave {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  15% {
+    transform: rotate(14deg) scale(1.08);
+  }
+  30% {
+    transform: rotate(-12deg) scale(1.08);
+  }
+  45% {
+    transform: rotate(12deg) scale(1.05);
+  }
+  60% {
+    transform: rotate(-8deg) scale(1.03);
+  }
+  75% {
+    transform: rotate(4deg) scale(1);
+  }
+}
+
+@keyframes minionFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes handWiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(20deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes speechPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(6px);
+  }
+  15%, 85% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-3px);
+  }
+}
+
+.animate-minion-wave {
+  animation: minionWave 2.8s infinite ease-in-out;
+  transform-origin: bottom center;
+}
+
+.animate-minion-float {
+  animation: minionFloat 3.2s infinite ease-in-out;
+}
+
+.animate-hand-wiggle {
+  animation: handWiggle 1.2s infinite ease-in-out;
+  transform-origin: bottom right;
+}
+
+.animate-speech-pop {
+  animation: speechPop 4.5s infinite ease-in-out;
+}

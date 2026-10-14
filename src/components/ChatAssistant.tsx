@@ -1,12 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Bot, 
   X, 
   Send, 
   ArrowRight, 
-  ShieldCheck 
+  ShieldCheck,
+  Sparkles
 } from 'lucide-react';
 import type { Place } from '../types';
+
+const MINION_IMAGE = "https://m.media-amazon.com/images/I/51UCoS4VwyL._AC_UF894,1000_QL80_.jpg";
+
+const MINION_REACTIONS = [
+  "Bello! 👋 Looking for Biryani or Cafes?",
+  "Banana! 🍌 Ask me anything near RSCOE!",
+  "Unlimited thali under ₹3000/mo? Tap me!",
+  "Need Xerox or mobile repair in 5 mins? 📱",
+  "Tathwade's cutest campus guide! ✨",
+];
 
 interface Message {
   id: string;
@@ -25,23 +35,34 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [reactionIndex, setReactionIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'init-1',
       sender: 'assistant',
-      text: "Namaskar! I'm RSCOE AI, your campus buddy. Ask me about affordable messes, haircuts, late-night printing, or hostels around Tathwade.",
+      text: "Bello! 🍌 I'm your RSCOE Minion campus buddy! Ask me about hot biryani, best student mess under ₹3000, cafes with Wi-Fi, late-night printing, or hostels in Tathwade!",
       timestamp: 'Just now',
     },
   ]);
 
   const samplePrompts = [
-    "Find me a cheap salon within 1 km.",
-    "Best mess under ₹3000/month",
-    "Where can I get lab manuals printed?",
-    "Late night egg or snacks spot",
+    "Best Biryani near RSCOE? 🍗",
+    "Best cafes to study or chill ☕",
+    "Messes under ₹3000/month 🍲",
+    "Late night egg or snacks spot 🍳",
+    "Where can I get lab manuals printed? 🖨️",
   ];
+
+  // Rotate cartoon speech reactions every 4.5 seconds
+  useEffect(() => {
+    if (isOpen) return;
+    const interval = setInterval(() => {
+      setReactionIndex((prev) => (prev + 1) % MINION_REACTIONS.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -73,27 +94,40 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
       let matched: Place[] = [];
       let reply = "";
 
-      if (lower.includes('salon') || lower.includes('haircut') || lower.includes('beard')) {
+      if (lower.includes('biryani') || lower.includes('chicken') || lower.includes('non-veg') || lower.includes('pulao')) {
+        matched = places.filter(p => 
+          p.name.toLowerCase().includes('biryani') || 
+          p.subcategory.toLowerCase().includes('biryani') ||
+          p.description.toLowerCase().includes('biryani')
+        );
+        reply = `Bello! 🍗 Found delicious biryani hubs strictly near campus: PK Dum Biryani is right opposite RSCOE Main Gate (student half plate ₹130), and Reddy's Hyderabadi has spicy Andhra biryani with free extra salan!`;
+      } else if (lower.includes('cafe') || lower.includes('coffee') || lower.includes('shake') || lower.includes('burger') || lower.includes('study')) {
+        matched = places.filter(p => p.category === 'cafes');
+        reply = `Banana! ☕ Check out Cafe Chokolade (120m away) for CadB shakes and cold coffee, Stories Cafe (190m away) with high-speed Wi-Fi and study desks, or Yewale Amruttulya right at Gate 1 for morning kadak chai!`;
+      } else if (lower.includes('salon') || lower.includes('haircut') || lower.includes('beard') || lower.includes('grooming')) {
         matched = places.filter(p => p.category === 'salon');
-        reply = `I found ${matched.length} student-friendly salons nearby. Style Studio is closest at ₹100 for a haircut with student ID discount!`;
+        reply = `Looking fresh! ✨ Style Studio Men's Grooming is closest at ₹100 for a student haircut with RSCOE ID card discount!`;
       } else if (lower.includes('mess') || lower.includes('thali') || lower.includes('food under') || lower.includes('3000')) {
         matched = places.filter(p => p.category === 'mess' || p.category === 'food');
-        reply = `Found great verified messes! Annapurna Mess has unlimited chapatis for ₹2,800/month (180m from Back Gate), and Sai Krupa has Maharashtrian thalis for ₹60.`;
+        reply = `Found great verified messes! Annapurna Mess has unlimited chapatis for ₹2,800/month (180m from Back Gate), and Sai Krupa offers Maharashtrian thalis for ₹60.`;
       } else if (lower.includes('print') || lower.includes('xerox') || lower.includes('binding') || lower.includes('journal')) {
-        matched = places.filter(p => p.category === 'printing');
-        reply = `Balaji Xerox (120m from Gate) prints B&W for ₹1.5/page and does fast project spiral binding. You can also send PDFs on their WhatsApp!`;
+        matched = places.filter(p => p.category === 'college-essentials' || p.subcategory.toLowerCase().includes('xerox'));
+        reply = `Balaji Xerox & Book Center (120m from Gate) prints B&W for ₹1.5/page and does express project spiral binding. You can also send PDFs directly to their WhatsApp!`;
       } else if (lower.includes('pg') || lower.includes('hostel') || lower.includes('stay') || lower.includes('room')) {
         matched = places.filter(p => p.category === 'pg');
-        reply = `Found ${matched.length} verified accommodations near RSCOE: Shree Samarth for boys (from ₹4,500/mo) and Mayur Girls PG (includes 3 meals and biometric security).`;
+        reply = `Found verified accommodations near RSCOE: Shree Samarth for boys (from ₹4,500/mo) and Mayur Girls PG (includes 3 meals and biometric security).`;
       } else if (lower.includes('late night') || lower.includes('snack') || lower.includes('egg') || lower.includes('tea') || lower.includes('misal')) {
-        matched = places.filter(p => p.category === 'street-food' || p.category === 'food');
-        reply = `Raju Bhurji is open till 12:30 AM right next to RSCOE ground. Kolhapuri Misal House opens early at 7:00 AM for spicy breakfast.`;
+        matched = places.filter(p => p.category === 'mess' || p.category === 'cafes');
+        reply = `Raju Bhurji is open till 12:30 AM right next to RSCOE ground. Yewale Amruttulya opens early at 6:30 AM for hot tea and bun maska!`;
+      } else if (lower.includes('repair') || lower.includes('mobile') || lower.includes('laptop')) {
+        matched = places.filter(p => p.category === 'repairs');
+        reply = `Sai Mobile Care (170m from Gate) fixes cracked screens, broken charging ports, and provides fast Type-C cables with warranty!`;
       } else if (lower.includes('medical') || lower.includes('medicine') || lower.includes('chemist')) {
         matched = places.filter(p => p.category === 'medical');
-        reply = `Wellness Pharmacy near the underpass is open 24x7 for emergencies. Sanjivani Medical gives a 10% student discount on medicines.`;
+        reply = `Wellness 24x7 Pharmacy near the underpass is open all night for emergencies. Sanjivani Medical also offers a 10% student discount.`;
       } else {
         matched = places.filter(p => p.featured).slice(0, 3);
-        reply = `Here are student favorites verified around JSPM RSCOE. You can check prices, timings, and walking distances below:`;
+        reply = `Poopaye! Here are top verified campus favorites right around JSPM RSCOE Tathwade. Check walking distance, timings, and menus below:`;
       }
 
       const botMsg: Message = {
@@ -106,124 +140,181 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
 
       setIsTyping(false);
       setMessages((prev) => [...prev, botMsg]);
-    }, 700);
+    }, 600);
   };
 
   return (
     <div className="fixed bottom-5 right-5 z-40">
-      {/* Floating Trigger Button */}
+      {/* Floating Trigger: Live Waving Minion Cartoon */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="group flex items-center gap-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-blue-600 dark:hover:bg-blue-600 text-white pl-3.5 pr-4 py-3 rounded-full shadow-xl shadow-slate-900/25 transition-all duration-300 hover:scale-105 cursor-pointer border border-slate-700"
-          aria-label="Open RSCOE AI Assistant"
-        >
-          <div className="relative">
-            <div className="w-8 h-8 rounded-full bg-blue-500 group-hover:bg-white text-white group-hover:text-blue-600 flex items-center justify-center transition-colors">
-              <Bot className="w-4 h-4" />
+        <div className="relative flex flex-col items-end">
+          {/* Animated Cartoon Speech Bubble */}
+          <div 
+            onClick={() => setIsOpen(true)}
+            className="mb-2 mr-1 cursor-pointer transition-transform hover:scale-105 active:scale-95"
+          >
+            <div className="relative bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs font-black px-3.5 py-1.5 rounded-2xl shadow-xl border-2 border-amber-400 dark:border-amber-400 flex items-center gap-1.5 whitespace-nowrap animate-speech-pop">
+              <span className="text-sm">🍌</span>
+              <span>{MINION_REACTIONS[reactionIndex]}</span>
+              {/* Speech bubble pointy arrow */}
+              <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white dark:bg-slate-800 border-b-2 border-r-2 border-amber-400 rotate-45"></div>
             </div>
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-900 animate-pulse"></span>
           </div>
-          <div className="text-left">
-            <div className="text-xs font-black tracking-tight leading-none">RSCOE AI</div>
-            <div className="text-[10px] text-slate-300 group-hover:text-blue-100 font-medium">Campus Guide</div>
-          </div>
-        </button>
+
+          {/* Minion Avatar Floating Action Button */}
+          <button
+            onClick={() => setIsOpen(true)}
+            className="group relative flex items-center gap-3 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-400 text-slate-950 pl-2 pr-4 py-2 rounded-full shadow-2xl shadow-amber-500/40 hover:shadow-amber-500/60 transition-all duration-300 hover:scale-108 active:scale-95 cursor-pointer border-2 border-white dark:border-amber-300"
+            aria-label="Open RSCOE Minion Assistant"
+          >
+            {/* Live Waving Minion Image Character */}
+            <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white shadow-md border-2 border-amber-400 flex items-center justify-center animate-minion-wave shrink-0">
+              <img 
+                src={MINION_IMAGE} 
+                alt="Live Waving Minion" 
+                className="w-full h-full object-cover object-center scale-110"
+              />
+              {/* Waving Hand Sticker */}
+              <span className="absolute bottom-0 right-0 text-xs animate-hand-wiggle select-none drop-shadow">
+                👋
+              </span>
+            </div>
+
+            {/* Label */}
+            <div className="text-left">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-black tracking-tight text-slate-950 uppercase">
+                  RSCOE Minion
+                </span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white animate-pulse"></span>
+              </div>
+              <div className="text-[10px] font-extrabold text-slate-800 leading-tight flex items-center gap-1">
+                <span>Bello! Tap to chat</span>
+                <span className="text-xs">🍌</span>
+              </div>
+            </div>
+          </button>
+        </div>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="w-85 sm:w-96 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[520px] max-h-[85vh] animate-scaleUp">
+        <div className="w-85 sm:w-96 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-amber-400/80 dark:border-amber-400/70 overflow-hidden flex flex-col h-[520px] max-h-[85vh] animate-scaleUp">
           
-          {/* Header */}
-          <div className="bg-slate-900 dark:bg-slate-950 text-white p-4 flex items-center justify-between border-b border-slate-800">
+          {/* Header with Minion Cartoon Style */}
+          <div className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 p-3.5 flex items-center justify-between border-b-2 border-amber-500 shadow-xs">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-blue-600 flex items-center justify-center shadow-md">
-                <Bot className="w-5 h-5 text-white" />
+              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-white border-2 border-slate-900 shadow-md shrink-0 animate-minion-wave">
+                <img 
+                  src={MINION_IMAGE} 
+                  alt="Minion Avatar" 
+                  className="w-full h-full object-cover scale-110"
+                />
+                <span className="absolute bottom-0 right-0 text-[10px]">👋</span>
               </div>
+
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-sm tracking-tight">RSCOE AI</span>
-                  <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-1.5 py-0.2 rounded">
-                    Verified
+                  <span className="font-black text-sm tracking-tight text-slate-950">RSCOE Minion AI</span>
+                  <span className="bg-slate-950 text-amber-300 text-[10px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider">
+                    Bello!
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-400">
-                  Grounded in Tathwade student data
+                <div className="text-[10px] font-bold text-slate-800 flex items-center gap-1">
+                  <span>🍌 Your live Tathwade campus buddy</span>
                 </div>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 text-slate-400 hover:text-white rounded-full hover:bg-slate-800 transition cursor-pointer"
+              className="p-1.5 text-slate-800 hover:text-black rounded-full hover:bg-black/10 transition cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Assistant Sub-banner */}
-          <div className="bg-blue-50 dark:bg-blue-950/60 border-b border-blue-100 dark:border-blue-900/60 px-3 py-1.5 text-[11px] text-blue-900 dark:text-blue-300 flex items-center justify-between">
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              Answers only using physically verified campus spots.
+          <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900/60 px-3 py-1.5 text-[11px] text-amber-950 dark:text-amber-200 flex items-center justify-between font-medium">
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+              <span>Grounded in verified JSPM RSCOE spots & menus!</span>
             </span>
           </div>
 
           {/* Messages Body */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs bg-white dark:bg-slate-900">
+          <div className="flex-1 p-3.5 overflow-y-auto space-y-3.5 text-xs bg-white dark:bg-slate-900">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex flex-col ${
-                  msg.sender === 'user' ? 'items-end' : 'items-start'
+                className={`flex gap-2 ${
+                  msg.sender === 'user' ? 'justify-end' : 'justify-start items-start'
                 }`}
               >
-                <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
-                    msg.sender === 'user'
-                      ? 'bg-blue-600 text-white font-medium rounded-br-xs'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/60 dark:border-slate-700/60 rounded-bl-xs'
-                  }`}
-                >
-                  <p>{msg.text}</p>
+                {/* Assistant Minion Avatar beside message */}
+                {msg.sender === 'assistant' && (
+                  <div className="w-7 h-7 rounded-full overflow-hidden bg-amber-100 border border-amber-400 shrink-0 mt-0.5 shadow-2xs">
+                    <img 
+                      src={MINION_IMAGE} 
+                      alt="Minion" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
 
-                  {/* Matching place cards */}
-                  {msg.suggestedPlaces && msg.suggestedPlaces.length > 0 && (
-                    <div className="mt-2.5 space-y-1.5 pt-2 border-t border-slate-200/80 dark:border-slate-700/80">
-                      {msg.suggestedPlaces.map((pl) => (
-                        <div
-                          key={pl.id}
-                          onClick={() => {
-                            onSelectPlace(pl);
-                            setIsOpen(false);
-                          }}
-                          className="bg-white dark:bg-slate-850 p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 cursor-pointer transition shadow-2xs flex items-center justify-between gap-2"
-                        >
-                          <div>
-                            <div className="font-bold text-slate-900 dark:text-white text-[11px]">{pl.name}</div>
-                            <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                              {pl.priceRange} • {pl.distanceFromCollege}
+                <div className="flex flex-col max-w-[82%]">
+                  <div
+                    className={`rounded-2xl px-3.5 py-2.5 leading-relaxed ${
+                      msg.sender === 'user'
+                        ? 'bg-blue-600 text-white font-medium rounded-br-xs ml-auto shadow-xs'
+                        : 'bg-amber-50/70 dark:bg-slate-800 text-slate-850 dark:text-slate-100 border border-amber-200/80 dark:border-slate-700 rounded-bl-xs shadow-2xs'
+                    }`}
+                  >
+                    <p>{msg.text}</p>
+
+                    {/* Matching place cards */}
+                    {msg.suggestedPlaces && msg.suggestedPlaces.length > 0 && (
+                      <div className="mt-2.5 space-y-1.5 pt-2 border-t border-amber-200/70 dark:border-slate-700/80">
+                        {msg.suggestedPlaces.map((pl) => (
+                          <div
+                            key={pl.id}
+                            onClick={() => {
+                              onSelectPlace(pl);
+                              setIsOpen(false);
+                            }}
+                            className="bg-white dark:bg-slate-850 p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-400 cursor-pointer transition shadow-2xs flex items-center justify-between gap-2"
+                          >
+                            <div>
+                              <div className="font-bold text-slate-900 dark:text-white text-[11px]">{pl.name}</div>
+                              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                                {pl.priceRange} • {pl.distanceFromCollege}
+                              </div>
                             </div>
+                            <ArrowRight className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
                           </div>
-                          <ArrowRight className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                <span className="text-[9px] text-slate-400 px-1 mt-0.5">
-                  {msg.timestamp}
-                </span>
+                  <span className={`text-[9px] text-slate-400 px-1 mt-0.5 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                    {msg.timestamp}
+                  </span>
+                </div>
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex items-center gap-1.5 text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-full w-20">
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></span>
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full overflow-hidden bg-amber-100 border border-amber-400 shrink-0">
+                  <img src={MINION_IMAGE} alt="Minion" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-500 bg-amber-50 dark:bg-slate-800 px-3 py-2 rounded-full border border-amber-200 dark:border-slate-700">
+                  <span className="text-[11px] font-bold text-amber-700 dark:text-amber-300">Minion thinking</span>
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </div>
               </div>
             )}
 
@@ -236,7 +327,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
               <button
                 key={i}
                 onClick={() => handleSend(prompt)}
-                className="text-[10px] font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 px-2.5 py-1 rounded-full whitespace-nowrap transition cursor-pointer text-slate-600 dark:text-slate-300 shrink-0 shadow-2xs"
+                className="text-[10px] font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-400 hover:text-amber-700 dark:hover:text-amber-300 px-2.5 py-1 rounded-full whitespace-nowrap transition cursor-pointer text-slate-700 dark:text-slate-300 shrink-0 shadow-2xs"
               >
                 {prompt}
               </button>
@@ -250,13 +341,13 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Ask RSCOE AI..."
-              className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ask RSCOE Minion... e.g. Best Biryani?"
+              className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
             <button
               onClick={() => handleSend()}
               disabled={!input.trim()}
-              className="p-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl transition cursor-pointer shadow-xs"
+              className="p-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 disabled:opacity-50 text-slate-950 font-bold rounded-xl transition cursor-pointer shadow-xs"
             >
               <Send className="w-4 h-4" />
             </button>
