@@ -41,7 +41,10 @@ export const PlaceDetailsModal: React.FC<PlaceDetailsModalProps> = ({
   if (!place) return null;
 
   const handleShare = () => {
-    navigator.clipboard?.writeText(window.location.href);
+    const url = `${window.location.origin}${window.location.pathname}?spot=${place.id}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+    }
     setCopiedShare(true);
     setTimeout(() => setCopiedShare(false), 2000);
   };

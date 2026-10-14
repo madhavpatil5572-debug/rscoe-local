@@ -99,6 +99,22 @@ export function App() {
   const [homeCategoryFilter, setHomeCategoryFilter] = useState<CategoryId>('all');
   const [mapShowAll, setMapShowAll] = useState(true);
 
+  // Deep linking: If URL has ?spot=place-id, open that spot modal automatically
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const spotParam = params.get('spot');
+      if (spotParam && places.length > 0) {
+        const matched = places.find(p => p.id === spotParam);
+        if (matched) {
+          setSelectedPlace(matched);
+        }
+      }
+    } catch (e) {
+      console.error('Error reading URL params', e);
+    }
+  }, [places]);
+
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: '',
     category: 'all',
