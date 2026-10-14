@@ -11,11 +11,11 @@ import type { Place } from '../types';
 const MINION_IMAGE = "https://m.media-amazon.com/images/I/51UCoS4VwyL._AC_UF894,1000_QL80_.jpg";
 
 const MINION_REACTIONS = [
-  "Bello! 👋 Looking for Biryani or Cafes?",
-  "Banana! 🍌 Ask me anything near RSCOE!",
+  "Namaskar! 👋 Looking for Biryani or Cafes?",
+  "Hey student! 👋 Ask me anything near RSCOE!",
   "Unlimited thali under ₹3000/mo? Tap me!",
   "Need Xerox or mobile repair in 5 mins? 📱",
-  "Tathwade's cutest campus guide! ✨",
+  "Tathwade's verified campus guide! ✨",
 ];
 
 interface Message {
@@ -42,7 +42,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
     {
       id: 'init-1',
       sender: 'assistant',
-      text: "Bello! 🍌 I'm your RSCOE Minion campus buddy! Ask me about hot biryani, best student mess under ₹3000, cafes with Wi-Fi, late-night printing, or hostels in Tathwade!",
+      text: "Namaskar! 👋 I'm your RSCOE Minion campus buddy! Ask me about hot biryani, best student mess under ₹3000, cafes with Wi-Fi, late-night printing, or hostels in Tathwade!",
       timestamp: 'Just now',
     },
   ]);
@@ -100,10 +100,10 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
           p.subcategory.toLowerCase().includes('biryani') ||
           p.description.toLowerCase().includes('biryani')
         );
-        reply = `Bello! 🍗 Found delicious biryani hubs strictly near campus: PK Dum Biryani is right opposite RSCOE Main Gate (student half plate ₹130), and Reddy's Hyderabadi has spicy Andhra biryani with free extra salan!`;
+        reply = `Hey there! 🍗 Found delicious biryani hubs strictly near campus: PK Dum Biryani is right opposite RSCOE Main Gate (student half plate ₹130), and Reddy's Hyderabadi has spicy Andhra biryani with free extra salan!`;
       } else if (lower.includes('cafe') || lower.includes('coffee') || lower.includes('shake') || lower.includes('burger') || lower.includes('study')) {
         matched = places.filter(p => p.category === 'cafes');
-        reply = `Banana! ☕ Check out Cafe Chokolade (120m away) for CadB shakes and cold coffee, Stories Cafe (190m away) with high-speed Wi-Fi and study desks, or Yewale Amruttulya right at Gate 1 for morning kadak chai!`;
+        reply = `Great choice! ☕ Check out Cafe Chokolade (120m away) for CadB shakes and cold coffee, Stories Cafe (190m away) with high-speed Wi-Fi and study desks, or Yewale Amruttulya right at Gate 1 for morning kadak chai!`;
       } else if (lower.includes('salon') || lower.includes('haircut') || lower.includes('beard') || lower.includes('grooming')) {
         matched = places.filter(p => p.category === 'salon');
         reply = `Looking fresh! ✨ Style Studio Men's Grooming is closest at ₹100 for a student haircut with RSCOE ID card discount!`;
@@ -127,7 +127,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
         reply = `Wellness 24x7 Pharmacy near the underpass is open all night for emergencies. Sanjivani Medical also offers a 10% student discount.`;
       } else {
         matched = places.filter(p => p.featured).slice(0, 3);
-        reply = `Poopaye! Here are top verified campus favorites right around JSPM RSCOE Tathwade. Check walking distance, timings, and menus below:`;
+        reply = `Here are top verified campus favorites right around JSPM RSCOE Tathwade. Check walking distance, timings, and menus below:`;
       }
 
       const botMsg: Message = {
@@ -154,7 +154,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
             className="mb-2 mr-1 cursor-pointer transition-transform hover:scale-105 active:scale-95"
           >
             <div className="relative bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs font-black px-3.5 py-1.5 rounded-2xl shadow-xl border-2 border-amber-400 dark:border-amber-400 flex items-center gap-1.5 whitespace-nowrap animate-speech-pop">
-              <span className="text-sm">🍌</span>
+              <span className="text-sm">👋</span>
               <span>{MINION_REACTIONS[reactionIndex]}</span>
               {/* Speech bubble pointy arrow */}
               <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white dark:bg-slate-800 border-b-2 border-r-2 border-amber-400 rotate-45"></div>
@@ -189,8 +189,8 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
                 <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white animate-pulse"></span>
               </div>
               <div className="text-[10px] font-extrabold text-slate-800 leading-tight flex items-center gap-1">
-                <span>Bello! Tap to chat</span>
-                <span className="text-xs">🍌</span>
+                <span>Tap to chat with campus buddy</span>
+                <span className="text-xs">✨</span>
               </div>
             </div>
           </button>
@@ -216,12 +216,12 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ places, onSelectPl
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="font-black text-sm tracking-tight text-slate-950">RSCOE Minion AI</span>
-                  <span className="bg-slate-950 text-amber-300 text-[10px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider">
-                    Bello!
+                  <span className="bg-slate-950 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider text-[9px]">
+                    Campus Buddy
                   </span>
                 </div>
                 <div className="text-[10px] font-bold text-slate-800 flex items-center gap-1">
-                  <span>🍌 Your live Tathwade campus buddy</span>
+                  <span>🎓 Your live Tathwade campus buddy</span>
                 </div>
               </div>
             </div>
