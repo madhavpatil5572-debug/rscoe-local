@@ -9,7 +9,9 @@ import {
   Search, 
   Sparkles, 
   Tag,
-  AlertCircle
+  AlertCircle,
+  Copy,
+  RotateCcw
 } from 'lucide-react';
 import type { Place } from '../types';
 
@@ -19,6 +21,7 @@ interface AdminDashboardProps {
   onDeletePlace: (placeId: string) => void;
   onEditPlace: (place: Place) => void;
   onAddNewPlace: () => void;
+  onResetToDefaults?: () => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -27,9 +30,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onDeletePlace,
   onEditPlace,
   onAddNewPlace,
+  onResetToDefaults,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'verified' | 'pending'>('all');
+  const [copiedJson, setCopiedJson] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const totalSpots = places.length;
@@ -73,7 +78,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {onResetToDefaults && (
+            <button
+              onClick={onResetToDefaults}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-xs transition cursor-pointer"
+              title="Reset to default 33 verified campus spots"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Defaults</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(JSON.stringify(places, null, 2));
+              setCopiedJson(true);
+              setTimeout(() => setCopiedJson(false), 2000);
+            }}
+            className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-xs transition cursor-pointer"
+            title="Copy current places JSON to clipboard to easily share or send to developer"
+          >
+            <Copy className="w-3.5 h-3.5" />
+            <span>{copiedJson ? 'Copied JSON!' : 'Copy Places JSON'}</span>
+          </button>
+
           <button
             onClick={onAddNewPlace}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition cursor-pointer"

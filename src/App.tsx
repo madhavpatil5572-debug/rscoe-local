@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Header 
 } from './components/Header';
@@ -64,7 +64,31 @@ import {
 
 export function App() {
   const [activeView, setActiveView] = useState<ActiveView>('home');
-  const [places, setPlaces] = useState<Place[]>(INITIAL_PLACES);
+  const [places, setPlaces] = useState<Place[]>(() => {
+    try {
+      const saved = localStorage.getItem('rscoe_custom_places');
+      if (saved) {
+        const parsed: Place[] = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Merge with INITIAL_PLACES so any newly added system places (place-26 to place-33) are never missed
+          const savedIds = new Set(parsed.map(p => p.id));
+          const missingSystemPlaces = INITIAL_PLACES.filter(p => !savedIds.has(p.id));
+          return [...parsed, ...missingSystemPlaces];
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load places from localStorage', e);
+    }
+    return INITIAL_PLACES;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('rscoe_custom_places', JSON.stringify(places));
+    } catch (e) {
+      console.error('Failed to save places to localStorage', e);
+    }
+  }, [places]);
   
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [hoveredPlace, setHoveredPlace] = useState<Place | null>(null);
@@ -237,6 +261,15 @@ export function App() {
   const handleEditPlace = (place: Place) => {
     setPlaceToEdit(place);
     setIsAddModalOpen(true);
+  };
+
+  const handleResetToDefaults = () => {
+    if (window.confirm('Reset all spots to the 33 official RSCOE campus verified places? Any custom spots saved in your browser will be cleared.')) {
+      try {
+        localStorage.removeItem('rscoe_custom_places');
+      } catch (e) {}
+      setPlaces(INITIAL_PLACES);
+    }
   };
 
   return (
@@ -638,6 +671,7 @@ export function App() {
             onToggleVerified={handleToggleVerified}
             onDeletePlace={handleDeletePlace}
             onEditPlace={handleEditPlace}
+            onResetToDefaults={handleResetToDefaults}
             onAddNewPlace={() => {
               setPlaceToEdit(null);
               setIsAddModalOpen(true);

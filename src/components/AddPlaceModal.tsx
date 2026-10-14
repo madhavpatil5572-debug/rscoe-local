@@ -5,7 +5,11 @@ import {
   Upload, 
   CheckCircle2, 
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  MapPin,
+  Image as ImageIcon,
+  Compass,
+  Info
 } from 'lucide-react';
 import type { CategoryId, Place, PriceLevel } from '../types';
 import { CATEGORIES, RSCOE_LOCATION } from '../data/placesData';
@@ -17,6 +21,17 @@ interface AddPlaceModalProps {
   initialPlaceToUpdate?: Place | null;
 }
 
+const PHOTO_PRESETS: { label: string; url: string }[] = [
+  { label: 'Biryani / Non-Veg', url: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Cafe / Coffee', url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Student Mess / Thali', url: 'https://images.unsplash.com/photo-1613292443284-8d10ef9383fe?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Grocery / Mart', url: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Mobile / Laptop Repair', url: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&auto=format&fit=crop&q=80' },
+  { label: 'College Essentials / Books', url: 'https://images.unsplash.com/photo-1507842229451-7f01be7fe80d?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Gym / Fitness', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Salon & Grooming', url: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&auto=format&fit=crop&q=80' },
+];
+
 export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
   isOpen,
   onClose,
@@ -24,64 +39,95 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
   initialPlaceToUpdate,
 }) => {
   const [name, setName] = useState(initialPlaceToUpdate?.name || '');
-  const [category, setCategory] = useState<CategoryId>(initialPlaceToUpdate?.category || 'food');
+  const [category, setCategory] = useState<CategoryId>(initialPlaceToUpdate?.category || 'mess');
   const [subcategory, setSubcategory] = useState(initialPlaceToUpdate?.subcategory || '');
   const [address, setAddress] = useState(initialPlaceToUpdate?.address || '');
+  const [latitude, setLatitude] = useState<string>(
+    initialPlaceToUpdate?.latitude ? String(initialPlaceToUpdate.latitude) : String(RSCOE_LOCATION.latitude)
+  );
+  const [longitude, setLongitude] = useState<string>(
+    initialPlaceToUpdate?.longitude ? String(initialPlaceToUpdate.longitude) : String(RSCOE_LOCATION.longitude)
+  );
   const [phone, setPhone] = useState(initialPlaceToUpdate?.phone || '');
-  const [openingHours, setOpeningHours] = useState(initialPlaceToUpdate?.openingHours || '9:00 AM - 9:00 PM');
+  const [openingHours, setOpeningHours] = useState(initialPlaceToUpdate?.openingHours || '9:00 AM - 10:00 PM');
   const [priceLevel, setPriceLevel] = useState<PriceLevel>(initialPlaceToUpdate?.priceLevel || 'budget');
-  const [priceRange, setPriceRange] = useState(initialPlaceToUpdate?.priceRange || '₹50 - ₹150');
+  const [priceRange, setPriceRange] = useState(initialPlaceToUpdate?.priceRange || '₹60 - ₹150');
   const [description, setDescription] = useState(initialPlaceToUpdate?.description || '');
   const [studentPerks, setStudentPerks] = useState(initialPlaceToUpdate?.studentPerks || '');
-  const [photoUrl] = useState(
-    initialPlaceToUpdate?.photos[0] || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80'
+  const [photoUrl, setPhotoUrl] = useState(
+    initialPlaceToUpdate?.photos[0] || 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80'
   );
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
+  const [showCoordHelper, setShowCoordHelper] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setPhotoUrl(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const calculateDistanceKm = (lat: number, lng: number) => {
+    const dLat = (lat - RSCOE_LOCATION.latitude) * 111.32;
+    const dLng = (lng - RSCOE_LOCATION.longitude) * (111.32 * Math.cos(RSCOE_LOCATION.latitude * (Math.PI / 180)));
+    const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+    return Math.round(dist * 100) / 100;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    const latOffset = (Math.random() - 0.5) * 0.005;
-    const lngOffset = (Math.random() - 0.5) * 0.005;
+    const latNum = parseFloat(latitude) || RSCOE_LOCATION.latitude;
+    const lngNum = parseFloat(longitude) || RSCOE_LOCATION.longitude;
+    const distKm = calculateDistanceKm(latNum, lngNum);
+    const distFormatted = distKm < 1 
+      ? `${Math.max(30, Math.round(distKm * 1000))}m from RSCOE Campus` 
+      : `${distKm.toFixed(1)} km from RSCOE Campus`;
 
     const newPlaceObj: Place = {
       id: initialPlaceToUpdate?.id || `user-place-${Date.now()}`,
       name: name.trim(),
       category,
       subcategory: subcategory.trim() || `${category.toUpperCase()} Spot`,
-      latitude: initialPlaceToUpdate?.latitude || RSCOE_LOCATION.latitude + latOffset,
-      longitude: initialPlaceToUpdate?.longitude || RSCOE_LOCATION.longitude + lngOffset,
-      address: address.trim() || 'Tathwade, Near RSCOE, Pune',
+      latitude: latNum,
+      longitude: lngNum,
+      address: address.trim() || 'Ashok Nagar, Tathwade, Pune 411033',
       phone: phone.trim() || '+91 98000 00000',
       rating: initialPlaceToUpdate?.rating || 4.5,
       reviewCount: initialPlaceToUpdate?.reviewCount || 1,
       priceLevel,
-      priceRange: priceRange.trim() || '₹50 - ₹150',
-      openingHours: openingHours.trim(),
+      priceRange: priceRange.trim() || '₹60 - ₹150',
+      openingHours: openingHours.trim() || '9:00 AM - 10:00 PM',
       isOpenNow: true,
-      description: description.trim() || 'Student recommended local business near JSPM RSCOE campus.',
-      services: [
-        { name: 'Standard Service / Menu Item', price: 80, popular: true },
-        { name: 'Student Special Combo', price: 120, popular: true },
+      description: description.trim() || 'Student-recommended local business near JSPM RSCOE campus.',
+      services: initialPlaceToUpdate?.services || [
+        { name: 'Standard Service / Menu Item', price: 80, unit: 'per order', popular: true },
+        { name: 'Student Special Combo', price: 120, unit: 'combo', popular: true },
       ],
-      photos: [photoUrl],
-      verified: false,
-      lastVerified: 'Pending Student Audit',
-      distanceFromCollege: initialPlaceToUpdate?.distanceFromCollege || '300m from College Gate',
-      distanceKm: initialPlaceToUpdate?.distanceKm || 0.3,
-      featured: false,
+      photos: [photoUrl.trim() || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80'],
+      verified: initialPlaceToUpdate?.verified ?? false,
+      lastVerified: initialPlaceToUpdate?.lastVerified || 'Pending Student Audit',
+      distanceFromCollege: distFormatted,
+      distanceKm: distKm,
+      featured: initialPlaceToUpdate?.featured || false,
       studentPerks: studentPerks.trim() || undefined,
-      reviews: [
+      reviews: initialPlaceToUpdate?.reviews || [
         {
           id: `rev-sub-${Date.now()}`,
           author: 'Student Contributor',
           role: 'RSCOE Community',
           rating: 5,
-          date: 'Today',
-          comment: 'Submitted for peer verification. Excellent spot for engineering students.',
+          date: 'Just now',
+          comment: 'Submitted by student. Saved to local campus directory.',
         },
       ],
       isDemo: true,
@@ -92,13 +138,13 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
     setTimeout(() => {
       setSubmittedSuccess(false);
       onClose();
-    }, 1800);
+    }, 1600);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn">
       <div 
-        className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto"
+        className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -109,10 +155,10 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                {initialPlaceToUpdate ? 'Suggest Update for Spot' : 'Add / Suggest a Place'}
+                {initialPlaceToUpdate ? 'Edit Spot Details' : 'Add Place Manually'}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                Contribute to the RSCOE verified campus network
+                Add any shop, cafe, mess, or service around JSPM RSCOE Tathwade
               </p>
             </div>
           </div>
@@ -132,21 +178,21 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-              Spot Successfully Submitted!
+              Place Successfully Saved!
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-300 max-w-sm mx-auto leading-relaxed">
-              Added to local discovery. Our student verification team will inspect prices and timings on our next weekly campus walk.
+              Saved to your browser storage and will appear immediately in the Explore list and Map.
             </p>
           </div>
         ) : (
           /* Form Content */
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-            {/* Student verification note */}
-            <div className="p-3 bg-blue-50/70 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-900/60 rounded-2xl flex items-start gap-2.5 text-xs text-blue-900 dark:text-blue-200">
+          <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[78vh] overflow-y-auto">
+            {/* Persistence & Guide Banner */}
+            <div className="p-3 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-2xl flex items-start gap-2.5 text-xs text-blue-900 dark:text-blue-200">
               <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-              <span>
-                <strong>How it works:</strong> All student suggestions appear immediately in the prototype and are flagged for physical audit by student coordinators.
-              </span>
+              <div className="leading-relaxed">
+                <strong>Instant Local Saving:</strong> Places you add here are saved directly in your browser. To make places permanent for all RSCOE students worldwide on the live Vercel URL, you can also share the details with the assistant!
+              </div>
             </div>
 
             {/* Place Name & Category */}
@@ -160,7 +206,7 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Mahaveer Mess, Cut & Style Salon"
+                  placeholder="e.g. PK Dum Biryani, Chai Point"
                   className="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -193,7 +239,7 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
                   type="text"
                   value={subcategory}
                   onChange={(e) => setSubcategory(e.target.value)}
-                  placeholder="e.g. Unlimited Thali, B&W Xerox"
+                  placeholder="e.g. Dum Biryani, Study Cafe, Xerox & Print"
                   className="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -224,7 +270,7 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="e.g. Near RSCOE Gate 2, Ashok Nagar"
+                  placeholder="e.g. Opposite RSCOE Gate 1, Ashok Nagar, Tathwade"
                   className="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -237,9 +283,136 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
                   type="text"
                   value={priceRange}
                   onChange={(e) => setPriceRange(e.target.value)}
-                  placeholder="e.g. ₹60 - ₹80 per meal"
+                  placeholder="e.g. ₹100 - ₹200 per person"
                   className="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+            </div>
+
+            {/* Exact GPS Coordinates Section */}
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Map Location (GPS Coordinates)</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowCoordHelper(!showCoordHelper)}
+                  className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                >
+                  <Info className="w-3 h-3" />
+                  <span>How to get from Google Maps?</span>
+                </button>
+              </div>
+
+              {showCoordHelper && (
+                <div className="p-2.5 bg-blue-50/70 dark:bg-blue-950/50 rounded-xl text-[11px] text-blue-900 dark:text-blue-200 space-y-1">
+                  <p><strong>Step 1:</strong> Open Google Maps on phone or browser and locate the shop.</p>
+                  <p><strong>Step 2:</strong> Right-click (or long press on phone) the spot on the map.</p>
+                  <p><strong>Step 3:</strong> Click the coordinate numbers at the top (e.g. <code>18.6198, 73.7542</code>) to copy them, and paste them into the fields below.</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
+                    Latitude (RSCOE is 18.6186)
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    placeholder="18.6186"
+                    className="w-full text-xs px-3 py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
+                    Longitude (RSCOE is 73.7554)
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    placeholder="73.7554"
+                    className="w-full text-xs px-3 py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+                <span>Calculated distance: <strong>{calculateDistanceKm(parseFloat(latitude) || RSCOE_LOCATION.latitude, parseFloat(longitude) || RSCOE_LOCATION.longitude)} km from RSCOE</strong></span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLatitude(String(RSCOE_LOCATION.latitude));
+                    setLongitude(String(RSCOE_LOCATION.longitude));
+                  }}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Reset to RSCOE Main Pin
+                </button>
+              </div>
+            </div>
+
+            {/* Photo Selection & Upload */}
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-2.5">
+              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <span>Place Photo / Image</span>
+              </label>
+
+              {/* Photo Preview & URL input */}
+              <div className="flex gap-3 items-center">
+                <div className="w-20 h-16 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700 shrink-0 border border-slate-300 dark:border-slate-600">
+                  <img 
+                    src={photoUrl} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80';
+                    }}
+                  />
+                </div>
+                <div className="flex-1 space-y-1.5">
+                  <input
+                    type="url"
+                    value={photoUrl}
+                    onChange={(e) => setPhotoUrl(e.target.value)}
+                    placeholder="Paste direct image link (Unsplash, Imgur, or direct URL)"
+                    className="w-full text-xs px-3 py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                  <div className="flex items-center gap-2">
+                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-[11px] font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                      <Upload className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                      <span>Upload from device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                    <span className="text-[10px] text-slate-400">or pick quick preset below</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Preset buttons */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {PHOTO_PRESETS.map((p) => (
+                  <button
+                    key={p.label}
+                    type="button"
+                    onClick={() => setPhotoUrl(p.url)}
+                    className="px-2 py-0.5 text-[10px] rounded-md font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 transition"
+                  >
+                    {p.label}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -301,18 +474,6 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
               />
             </div>
 
-            {/* Photo Upload Placeholder */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Photo Upload (Prototype Demo)
-              </label>
-              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-center bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 transition cursor-pointer flex flex-col items-center justify-center gap-1">
-                <Upload className="w-6 h-6 text-slate-400 dark:text-slate-500" />
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Click to upload photo from phone</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500">PNG, JPG up to 5MB (Sample image assigned for demo)</span>
-              </div>
-            </div>
-
             {/* Modal Actions */}
             <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
               <button
@@ -326,7 +487,7 @@ export const AddPlaceModal: React.FC<AddPlaceModalProps> = ({
                 type="submit"
                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition cursor-pointer"
               >
-                Submit Spot for Verification
+                {initialPlaceToUpdate ? 'Save Changes' : 'Save Spot to Directory'}
               </button>
             </div>
           </form>
